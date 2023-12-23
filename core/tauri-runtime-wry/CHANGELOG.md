@@ -1,5 +1,16 @@
 # Changelog
 
+## \[1.0.0-alpha.9]
+
+### Bug Fixes
+
+- [`0d0501cb`](https://www.github.com/tauri-apps/tauri/commit/0d0501cb7b5e767c51a3697a148acfe84211a7ad)([#8394](https://www.github.com/tauri-apps/tauri/pull/8394)) Use `arboard` instead of `tao` clipboard implementation to prevent a crash.
+
+### Dependencies
+
+- Upgraded to `tauri-utils@2.0.0-alpha.13`
+- Upgraded to `tauri-runtime@1.0.0-alpha.8`
+
 ## \[1.0.0-alpha.8]
 
 ### Dependencies

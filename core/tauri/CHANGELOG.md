@@ -1,5 +1,23 @@
 # Changelog
 
+## \[2.0.0-alpha.21]
+
+### Bug Fixes
+
+- [`50a3d170`](https://www.github.com/tauri-apps/tauri/commit/50a3d170f242178d41fe7e8a3adf964541f6fe9c)([#8408](https://www.github.com/tauri-apps/tauri/pull/8408)) On Windows, fix `open` dialog `defaultPath`, when invoked from JS, not working if the path uses forward slash (`/`)
+
+### Dependencies
+
+- Upgraded to `tauri-runtime-wry@1.0.0-alpha.9`
+- Upgraded to `tauri-utils@2.0.0-alpha.13`
+- Upgraded to `tauri-runtime@1.0.0-alpha.8`
+- Upgraded to `tauri-macros@2.0.0-alpha.13`
+- Upgraded to `tauri-build@2.0.0-alpha.14`
+
+### Breaking Changes
+
+- [`2032228c`](https://www.github.com/tauri-apps/tauri/commit/2032228cad0de6500616ca765af5c9ff1f231f0f)([#8430](https://www.github.com/tauri-apps/tauri/pull/8430)) Removed `GlobalWindowEvent` struct, and unpacked its field to be passed directly to `tauri::Builder::on_window_event`.
+
 ## \[2.0.0-alpha.20]
 
 ### Dependencies

@@ -1,5 +1,15 @@
 # Changelog
 
+## \[2.0.0-alpha.14]
+
+### Enhancements
+
+- [`091100ac`](https://www.github.com/tauri-apps/tauri/commit/091100acbb507b51de39fb1446f685926f888fd2)([#5202](https://www.github.com/tauri-apps/tauri/pull/5202)) Add RPM packaging
+
+### Dependencies
+
+- Upgraded to `tauri-utils@2.0.0-alpha.13`
+
 ## \[2.0.0-alpha.13]
 
 ### Dependencies

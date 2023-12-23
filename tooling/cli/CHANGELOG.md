@@ -1,5 +1,20 @@
 # Changelog
 
+## \[2.0.0-alpha.21]
+
+### Enhancements
+
+- [`091100ac`](https://www.github.com/tauri-apps/tauri/commit/091100acbb507b51de39fb1446f685926f888fd2)([#5202](https://www.github.com/tauri-apps/tauri/pull/5202)) Add RPM packaging
+
+### Bug Fixes
+
+- [`41990cd3`](https://www.github.com/tauri-apps/tauri/commit/41990cd344e5afdf95028492ade92a91f65d5e05)([#8448](https://www.github.com/tauri-apps/tauri/pull/8448)) Prevent `Invalid target triple` warnings and correctly set `TAURI_ENV_` vars when target triple contains 4 components. `darwin` and `androideabi` are no longer replaced with `macos` and `android` in `TAURI_ENV_PLATFORM`.
+
+### Dependencies
+
+- Upgraded to `tauri-bundler@2.0.0-alpha.14`
+- Upgraded to `tauri-utils@2.0.0-alpha.13`
+
 ## \[2.0.0-alpha.20]
 
 ### Dependencies
