@@ -98,7 +98,7 @@ impl Monitor {
 
 /// A builder for a window managed by Tauri.
 pub struct WindowBuilder<'a, R: Runtime, M: Manager<R>> {
-  manager: &'a M,
+  pub(crate) manager: &'a M,
   label: String,
   pub(crate) window_builder:
     <R::WindowDispatcher as WindowDispatch<EventLoopMessage>>::WindowBuilder,

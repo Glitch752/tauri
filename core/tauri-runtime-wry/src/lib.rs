@@ -2774,8 +2774,8 @@ fn handle_event_loop<T: UserEvent>(
     callback,
     webview_id_map,
     windows,
-    #[cfg(feature = "tracing")]
-    active_tracing_spans,
+    // #[cfg(feature = "tracing")]
+    // active_tracing_spans,
   } = context;
   if *control_flow != ControlFlow::Exit {
     *control_flow = ControlFlow::Wait;
@@ -2853,19 +2853,19 @@ fn handle_event_loop<T: UserEvent>(
         }
 
         match event {
-          #[cfg(windows)]
-          TaoWindowEvent::ThemeChanged(theme) => {
-            if let Some(window) = windows.borrow().get(&window_id) {
-              if let Some(WindowHandle::Webview { inner, .. }) = &window.inner {
-                let theme = match theme {
-                  TaoTheme::Dark => wry::Theme::Dark,
-                  TaoTheme::Light => wry::Theme::Light,
-                  _ => wry::Theme::Light,
-                };
-                inner.set_theme(theme);
-              }
-            }
-          }
+          // #[cfg(windows)]
+          // TaoWindowEvent::ThemeChanged(theme) => {
+          //   if let Some(window) = windows.borrow().get(&window_id) {
+          //     if let Some(RawWindowHandle::Webview { inner, .. }) = &window.inner {
+          //       let theme: wry::Theme = match theme {
+          //         TaoTheme::Dark => wry::Theme::Dark,
+          //         TaoTheme::Light => wry::Theme::Light,
+          //         _ => wry::Theme::Light,
+          //       };
+          //       inner.set_theme(theme);
+          //     }
+          //   }
+          // }
           TaoWindowEvent::CloseRequested => {
             on_close_requested(callback, window_id, windows.clone());
           }
@@ -3015,8 +3015,8 @@ fn create_window<T: UserEvent, F: Fn(RawWindow) + Send + 'static>(
   #[cfg(windows)]
   {
     window_builder.inner = window_builder
-      .inner
-      .with_drag_and_drop(webview_attributes.file_drop_handler_enabled);
+      .inner;
+      // .with_drag_and_drop(webview_attributes.file_drop_handler_enabled);
   }
 
   #[cfg(windows)]
@@ -3135,8 +3135,8 @@ fn create_webview<T: UserEvent>(
     label,
     ipc_handler,
     url,
-    #[cfg(target_os = "android")]
-    on_webview_created,
+    // #[cfg(target_os = "android")]
+    // on_webview_created,
     ..
   } = pending;
 
@@ -3243,18 +3243,21 @@ fn create_webview<T: UserEvent>(
   }
 
   #[cfg(windows)]
+  let proxy = context.proxy.clone();
+
+  #[cfg(windows)]
   {
     if let Some(additional_browser_args) = webview_attributes.additional_browser_args {
       webview_builder = webview_builder.with_additional_browser_args(&additional_browser_args);
     }
 
-    if let Some(theme) = window_theme {
-      webview_builder = webview_builder.with_theme(match theme {
-        TaoTheme::Dark => wry::Theme::Dark,
-        TaoTheme::Light => wry::Theme::Light,
-        _ => wry::Theme::Light,
-      });
-    }
+    // if let Some(theme) = window_theme {
+    //   webview_builder = webview_builder.with_theme(match theme {
+    //     TaoTheme::Dark => wry::Theme::Dark,
+    //     TaoTheme::Light => wry::Theme::Light,
+    //     _ => wry::Theme::Light,
+    //   });
+    // }
   }
 
   #[cfg(windows)]
@@ -3356,6 +3359,7 @@ fn create_webview<T: UserEvent>(
         &FocusChangedEventHandler::create(Box::new(move |_, _| {
           let _ = proxy.send_event(Message::Webview(
             window_id,
+            id,
             WebviewMessage::WebviewEvent(WebviewEvent::Focused(true)),
           ));
           Ok(())
@@ -3369,6 +3373,7 @@ fn create_webview<T: UserEvent>(
         &FocusChangedEventHandler::create(Box::new(move |_, _| {
           let _ = proxy_.send_event(Message::Webview(
             window_id,
+            id,
             WebviewMessage::WebviewEvent(WebviewEvent::Focused(false)),
           ));
           Ok(())
