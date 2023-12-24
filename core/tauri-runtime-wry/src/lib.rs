@@ -2886,20 +2886,20 @@ fn handle_event_loop<T: UserEvent>(
               }
             }
           }
-          TaoWindowEvent::Resized(size) => {
-            if let Some(webviews) = windows.borrow().get(&window_id).map(|w| w.webviews.clone()) {
-              for webview in webviews {
-                if let Some(bounds) = &webview.bounds {
-                  webview.set_bounds(wry::Rect {
-                    x: (size.width as f32 * bounds.x_rate) as i32,
-                    y: (size.height as f32 * bounds.y_rate) as i32,
-                    width: (size.width as f32 * bounds.width_rate) as u32,
-                    height: (size.height as f32 * bounds.height_rate) as u32,
-                  });
-                }
-              }
-            }
-          }
+          // TaoWindowEvent::Resized(size) => {
+          //   if let Some(webviews) = windows.borrow().get(&window_id).map(|w| w.webviews.clone()) {
+          //     for webview in webviews {
+          //       if let Some(bounds) = &webview.bounds {
+          //         webview.set_bounds(wry::Rect {
+          //           x: (size.width as f32 * bounds.x_rate) as i32,
+          //           y: (size.height as f32 * bounds.y_rate) as i32,
+          //           width: (size.width as f32 * bounds.width_rate) as u32,
+          //           height: (size.height as f32 * bounds.height_rate) as u32,
+          //         });
+          //       }
+          //     }
+          //   }
+          // }
           _ => {}
         }
       }
