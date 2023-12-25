@@ -27,7 +27,7 @@ pub mod window;
 use monitor::Monitor;
 use window::{
   dpi::{PhysicalPosition, PhysicalSize, Position, Size},
-  CursorIcon, DetachedWindow, PendingWindow, RawWindow, WindowEvent,
+  CursorIcon, DetachedWindow, PendingWindow, RawWindow, WindowEvent, ResizeDirection,
 };
 use window::{WindowBuilder, WindowId};
 
@@ -437,6 +437,9 @@ pub trait WindowDispatch<T: UserEvent>: Debug + Clone + Send + Sync + Sized + 's
 
   /// Gets the window's current focus state.
   fn is_focused(&self) -> Result<bool>;
+  
+  /// Gets the position of the cursor in window coordinates.
+  fn cursor_position(&self) -> Result<Position>;
 
   /// Gets the window’s current decoration state.
   fn is_decorated(&self) -> Result<bool>;
@@ -647,6 +650,9 @@ pub trait WindowDispatch<T: UserEvent>: Debug + Clone + Send + Sync + Sized + 's
 
   /// Starts dragging the window.
   fn start_dragging(&self) -> Result<()>;
+
+  /// Starts resizing the window through a drag.
+  fn drag_resize_window(&self, resize_direction: ResizeDirection) -> Result<()>;
 
   /// Sets the taskbar progress state.
   ///

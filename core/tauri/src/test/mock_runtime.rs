@@ -9,7 +9,7 @@ use tauri_runtime::{
   monitor::Monitor,
   webview::{DetachedWebview, PendingWebview},
   window::{
-    dpi::{PhysicalPosition, PhysicalSize, Position, Size},
+    dpi::{PhysicalPosition, PhysicalSize, Position, Size, LogicalPosition},
     CursorIcon, DetachedWindow, PendingWindow, RawWindow, WindowEvent, WindowId,
   },
   window::{WindowBuilder, WindowBuilderBase},
@@ -541,6 +541,10 @@ impl<T: UserEvent> WindowDispatch<T> for MockWindowDispatcher {
   fn is_focused(&self) -> Result<bool> {
     Ok(false)
   }
+  
+  fn cursor_position(&self) -> Result<Position> {
+    Ok(Position::Logical(LogicalPosition { x: 0.0, y: 0.0 }))
+  }
 
   fn is_decorated(&self) -> Result<bool> {
     Ok(false)
@@ -820,6 +824,10 @@ impl<T: UserEvent> WindowDispatch<T> for MockWindowDispatcher {
   }
 
   fn start_dragging(&self) -> Result<()> {
+    Ok(())
+  }
+
+  fn drag_resize_window(&self, resize_direction: tauri_runtime::window::ResizeDirection) -> Result<()> {
     Ok(())
   }
 

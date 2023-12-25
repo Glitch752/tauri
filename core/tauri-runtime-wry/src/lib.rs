@@ -18,7 +18,7 @@ use tauri_runtime::{
   window::{
     dpi::{LogicalPosition, LogicalSize, PhysicalPosition, PhysicalSize, Position, Size},
     CursorIcon, DetachedWindow, FileDropEvent, PendingWindow, RawWindow, WindowBuilder,
-    WindowBuilderBase, WindowEvent, WindowId,
+    WindowBuilderBase, WindowEvent, WindowId, ResizeDirection,
   },
   DeviceEventFilter, Error, EventLoopProxy, ExitRequestedEventAction, Icon, Result, RunEvent,
   RunIteration, Runtime, RuntimeHandle, RuntimeInitArgs, UserAttentionType, UserEvent,
@@ -55,7 +55,7 @@ use tao::{
   window::{
     CursorIcon as TaoCursorIcon, Fullscreen, Icon as TaoWindowIcon,
     ProgressBarState as TaoProgressBarState, ProgressState as TaoProgressState, Theme as TaoTheme,
-    UserAttentionType as TaoUserAttentionType,
+    UserAttentionType as TaoUserAttentionType, ResizeDirection as TaoResizeDirection
   },
 };
 #[cfg(target_os = "macos")]
@@ -620,6 +620,25 @@ impl From<CursorIcon> for CursorIconWrapper {
   }
 }
 
+pub struct ResizeDirectionWrapper(pub TaoResizeDirection);
+
+impl From<ResizeDirection> for ResizeDirectionWrapper {
+  fn from(icon: ResizeDirection) -> Self {
+    use ResizeDirection::*;
+    let i = match icon {
+      East => TaoResizeDirection::East,
+      North => TaoResizeDirection::North,
+      NorthEast => TaoResizeDirection::NorthEast,
+      NorthWest => TaoResizeDirection::NorthWest,
+      South => TaoResizeDirection::South,
+      SouthEast => TaoResizeDirection::SouthEast,
+      SouthWest => TaoResizeDirection::SouthWest,
+      West => TaoResizeDirection::West
+    };
+    Self(i)
+  }
+}
+
 pub struct ProgressStateWrapper(pub TaoProgressState);
 
 impl From<ProgressBarStatus> for ProgressStateWrapper {
@@ -1070,6 +1089,7 @@ pub enum WindowMessage {
   IsMinimized(Sender<bool>),
   IsMaximized(Sender<bool>),
   IsFocused(Sender<bool>),
+  GetCursorPosition(Sender<Position>),
   IsDecorated(Sender<bool>),
   IsResizable(Sender<bool>),
   IsMaximizable(Sender<bool>),
@@ -1134,6 +1154,7 @@ pub enum WindowMessage {
   SetIgnoreCursorEvents(bool),
   SetProgressBar(ProgressBarState),
   DragWindow,
+  DragResizeWindow(ResizeDirection),
   RequestRedraw,
 }
 
@@ -1418,6 +1439,10 @@ impl<T: UserEvent> WindowDispatch<T> for WryWindowDispatcher<T> {
 
   fn is_focused(&self) -> Result<bool> {
     window_getter!(self, WindowMessage::IsFocused)
+  }
+  
+  fn cursor_position(&self) -> Result<Position> {
+    window_getter!(self, WindowMessage::GetCursorPosition)
   }
 
   /// Gets the window’s current decoration state.
@@ -1776,6 +1801,16 @@ impl<T: UserEvent> WindowDispatch<T> for WryWindowDispatcher<T> {
     send_user_message(
       &self.context,
       Message::Window(self.window_id, WindowMessage::DragWindow),
+    )
+  }
+
+  fn drag_resize_window(&self, resize_direction: ResizeDirection) -> Result<()> {
+    send_user_message(
+      &self.context,
+      Message::Window(
+        self.window_id,
+        WindowMessage::DragResizeWindow(resize_direction),
+      )
     )
   }
 
@@ -2448,6 +2483,13 @@ fn handle_user_message<T: UserEvent>(
           WindowMessage::IsMinimized(tx) => tx.send(window.is_minimized()).unwrap(),
           WindowMessage::IsMaximized(tx) => tx.send(window.is_maximized()).unwrap(),
           WindowMessage::IsFocused(tx) => tx.send(window.is_focused()).unwrap(),
+          WindowMessage::GetCursorPosition(tx) => tx.send({
+            let cursor_position = window.cursor_position().unwrap_or_default();
+            PhysicalPosition {
+              x: cursor_position.x as f64,
+              y: cursor_position.y as f64,
+            }.into()
+          }).unwrap(),
           WindowMessage::IsDecorated(tx) => tx.send(window.is_decorated()).unwrap(),
           WindowMessage::IsResizable(tx) => tx.send(window.is_resizable()).unwrap(),
           WindowMessage::IsMaximizable(tx) => tx.send(window.is_maximizable()).unwrap(),
@@ -2567,6 +2609,9 @@ fn handle_user_message<T: UserEvent>(
           }
           WindowMessage::DragWindow => {
             let _ = window.drag_window();
+          }
+          WindowMessage::DragResizeWindow(direction) => {
+            let _ = window.drag_resize_window(ResizeDirectionWrapper::from(direction).0);
           }
           WindowMessage::RequestRedraw => {
             window.request_redraw();
@@ -3180,6 +3225,7 @@ fn create_webview<T: UserEvent>(
         let vbox = window.default_vbox().unwrap();
         WebViewBuilder::new_gtk(vbox)
       };
+
       builder
     }
   };

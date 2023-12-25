@@ -8,7 +8,7 @@ pub(crate) mod plugin;
 
 use tauri_runtime::{
   webview::PendingWebview,
-  window::dpi::{PhysicalPosition, PhysicalSize},
+  window::{dpi::{PhysicalPosition, PhysicalSize}, ResizeDirection},
 };
 pub use tauri_utils::{config::Color, WindowEffect as Effect, WindowEffectState as EffectState};
 
@@ -1747,6 +1747,11 @@ impl<R: Runtime> Window<R> {
       .map_err(Into::into)
   }
 
+  /// Gets the position of the cursor in window coordinates.
+  pub fn cursor_position(&self) -> crate::Result<Position> {
+    self.window.dispatcher.cursor_position().map_err(Into::into)
+  }
+
   /// Ignores the window cursor events.
   pub fn set_ignore_cursor_events(&self, ignore: bool) -> crate::Result<()> {
     self
@@ -1759,6 +1764,11 @@ impl<R: Runtime> Window<R> {
   /// Starts dragging the window.
   pub fn start_dragging(&self) -> crate::Result<()> {
     self.window.dispatcher.start_dragging().map_err(Into::into)
+  }
+
+  /// Starts dragging to resize the window.
+  pub fn drag_resize_window(&self, resize_direction: ResizeDirection) -> crate::Result<()> {
+    self.window.dispatcher.drag_resize_window(resize_direction).map_err(Into::into)
   }
 
   /// Sets the taskbar progress state.

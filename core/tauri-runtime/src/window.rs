@@ -85,6 +85,19 @@ pub enum FileDropEvent {
   Cancelled,
 }
 
+// A direction for resizing operations.
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum ResizeDirection {
+  East,
+  North,
+  NorthEast,
+  NorthWest,
+  South,
+  SouthEast,
+  SouthWest,
+  West
+}
+
 /// Describes the appearance of the mouse cursor.
 #[non_exhaustive]
 #[derive(Debug, Default, Copy, Clone, PartialEq, Eq, Hash)]
