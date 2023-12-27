@@ -140,6 +140,12 @@ impl Channel {
         .lock()
         .unwrap()
         .insert(data_id, body);
+
+      // If the webview is on an external URL, don't bother with the fetch channel data command.
+      if webview.url().to_string().starts_with("http://tauri.localhost") {
+        return webview.eval(&format!("window['_' + {}]()", callback.0));
+      }
+
       webview.eval(&format!(
         "window.__TAURI_INTERNALS__.invoke('{FETCH_CHANNEL_DATA_COMMAND}', null, {{ headers: {{ '{CHANNEL_ID_HEADER_NAME}': '{data_id}' }} }}).then(window['_' + {}]).catch(console.error)",
         callback.0
