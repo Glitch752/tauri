@@ -74,7 +74,6 @@
           payload
         })
 
-        console.log(data);
         window.ipc.postMessage(data)
       }
     }
