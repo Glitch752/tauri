@@ -48,9 +48,12 @@ fn main() {
   alias("desktop", !mobile);
   alias("mobile", mobile);
 
+  // Temporary hack: Don't use the custom protocol at all; it doesn't work with CSP.
+  // This will definitely break in certain situations, but it mostly works for now.
   alias(
     "ipc_custom_protocol",
-    target_os != "android" && (target_os != "linux" || has_feature("linux-ipc-protocol")),
+    // target_os != "android" && (target_os != "linux" || has_feature("linux-ipc-protocol")),
+    false
   );
 
   let checked_features_out_path = Path::new(&var("OUT_DIR").unwrap()).join("checked_features");

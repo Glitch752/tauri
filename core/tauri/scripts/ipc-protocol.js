@@ -19,13 +19,16 @@
       // AND
       // - when not on macOS with an https URL
       if (
-        (useCustomProtocol ||
-          cmd === fetchChannelDataCommand ||
-          !(osName === 'linux' || osName === 'android')) &&
-        !(
-          (osName === 'macos' || osName === 'ios') &&
-          location.protocol === 'https:'
-        )
+        // Temporary hack: Don't use the custom protocol at all; it doesn't work with CSP.
+        // This will definitely break in certain situations, but it mostly works for now.
+        // (useCustomProtocol ||
+        //   cmd === fetchChannelDataCommand ||
+        //   !(osName === 'linux' || osName === 'android')) &&
+        // !(
+        //   (osName === 'macos' || osName === 'ios') &&
+        //   location.protocol === 'https:'
+        // )
+        useCustomProtocol
       ) {
         const { contentType, data } = processIpcMessage(payload)
         fetch(window.__TAURI_INTERNALS__.convertFileSrc(cmd, 'ipc'), {
