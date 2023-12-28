@@ -22,7 +22,7 @@
         // Temporary hack: Don't use the custom protocol at all; it doesn't work with CSP.
         // This will definitely break in certain situations, but it mostly works for now.
         // (useCustomProtocol ||
-          cmd === fetchChannelDataCommand ||
+          // cmd === fetchChannelDataCommand ||
         //   !(osName === 'linux' || osName === 'android')) &&
         // !(
         //   (osName === 'macos' || osName === 'ios') &&

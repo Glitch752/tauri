@@ -1731,8 +1731,20 @@ fn on_event_loop_event<R: Runtime, F: FnMut(&AppHandle<R>, RunEvent) + 'static>(
     event: RuntimeWindowEvent::Destroyed,
   } = &event
   {
-    // TODO: destroy webviews
+    // Destroy attached webviews
+    let windows_lock = manager.window.windows_lock();
+    let binding = windows_lock.clone();
+    let window = binding.get(label).unwrap();
+    drop(windows_lock); // Must drop the windows lock before calling `on_window_close` to avoid a deadlock
+
+    let webviews = window.webviews();
+
     manager.window.on_window_close(label);
+
+    let mut webviews_lock = manager.webview.webviews_lock();
+    for webview in webviews {
+      webviews_lock.remove(webview.label());
+    }
   }
 
   let event = match event {

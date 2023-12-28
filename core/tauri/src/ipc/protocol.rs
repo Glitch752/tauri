@@ -225,7 +225,9 @@ fn handle_ipc_message<R: Runtime>(message: String, manager: &AppManager<R>, labe
 
             // the channel data command is the only command that uses a custom protocol on Linux
             if webview.manager().webview.invoke_responder.is_none()
-              && cmd != crate::ipc::channel::FETCH_CHANNEL_DATA_COMMAND
+              // Temporary hack: Don't use the custom protocol at all; it doesn't work with CSP.
+              // This will definitely break in certain situations, but it mostly works for now.
+              // && cmd != crate::ipc::channel::FETCH_CHANNEL_DATA_COMMAND
             {
               fn responder_eval<R: Runtime>(
                 webview: &crate::Webview<R>,
@@ -245,6 +247,7 @@ fn handle_ipc_message<R: Runtime>(message: String, manager: &AppManager<R>, labe
                 InvokeResponse::Ok(InvokeBody::Json(v)) => {
                   if !(cfg!(target_os = "macos") || cfg!(target_os = "ios"))
                     && matches!(v, JsonValue::Object(_) | JsonValue::Array(_))
+                    && cmd != crate::ipc::channel::FETCH_CHANNEL_DATA_COMMAND
                   {
                     let _ = Channel::from_callback_fn(webview, callback).send(v);
                   } else {
@@ -256,7 +259,8 @@ fn handle_ipc_message<R: Runtime>(message: String, manager: &AppManager<R>, labe
                   }
                 }
                 InvokeResponse::Ok(InvokeBody::Raw(v)) => {
-                  if cfg!(target_os = "macos") || cfg!(target_os = "ios") {
+                  if cfg!(target_os = "macos") || cfg!(target_os = "ios") 
+                    || cmd == crate::ipc::channel::FETCH_CHANNEL_DATA_COMMAND {
                     responder_eval(
                       &webview,
                       format_callback_result(Result::<_, ()>::Ok(v), callback, error),
